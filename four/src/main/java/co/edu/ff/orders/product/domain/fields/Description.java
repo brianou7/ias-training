@@ -17,4 +17,9 @@ public class Description extends AbstractStringField {
         this.value = value;
     }
 
+    @Override
+    public String valueOf() {
+        return value;
+    }
+
 }

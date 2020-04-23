@@ -16,5 +16,5 @@ public class ProductOperationSuccess implements ProductOperation {
     public String failure() { return null; }
 
     @Override
-    public Boolean isValid() { return null; }
+    public Boolean isValid() { return true; }
 }

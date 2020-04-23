@@ -1,7 +1,6 @@
 package co.edu.ff.orders.product.domain.fields;
 
 import co.edu.ff.orders.common.serialization.AbstractBigDecimalField;
-import co.edu.ff.orders.common.serialization.AbstractNotNullField;
 import co.edu.ff.orders.common.validations.Preconditions;
 import lombok.Value;
 
@@ -16,6 +15,11 @@ public class Price extends AbstractBigDecimalField {
         super(value);
         Preconditions.checkArgument(value.compareTo(new BigDecimal(0)) != -1);
         this.value = value;
+    }
+
+    @Override
+    public BigDecimal valueOf() {
+        return value;
     }
 
 }

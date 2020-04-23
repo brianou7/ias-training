@@ -1,9 +1,10 @@
 package co.edu.ff.orders.product.controllers;
 
 import co.edu.ff.orders.product.domain.ProductCreated;
+import co.edu.ff.orders.product.domain.ProductOperationFailure;
 import co.edu.ff.orders.product.domain.ProductOperationRequest;
 import co.edu.ff.orders.product.domain.contracts.ProductOperation;
-import co.edu.ff.orders.product.domain.fields.Id;
+import co.edu.ff.orders.product.domain.fields.*;
 import co.edu.ff.orders.product.services.ProductServices;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -24,20 +25,17 @@ public class ProductController {
             return ResponseEntity.ok(operation);
         }
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(operation);
+        if (operation instanceof ProductOperationFailure) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(operation);
+        } else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @PostMapping
     public ResponseEntity<ProductOperation> createProduct(@RequestBody ProductOperationRequest newProduct) {
-        ProductOperation productOperation = services.insertProduct(newProduct);
-        return response(productOperation);
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<ProductOperation> getProductById(@PathVariable Id productId) {
-        ProductOperation productOperation = services.findById(productId);
-        return response(productOperation);
+        return response(services.insertProduct(newProduct));
     }
 
     @GetMapping
@@ -45,5 +43,19 @@ public class ProductController {
         return ResponseEntity.ok(services.findAll());
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<ProductOperation> getProductById(@PathVariable Id productId) {
+        return response(services.findById(productId));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ProductOperation> updateProduct(@PathVariable Id productId, @RequestBody ProductOperationRequest request) {
+        return response(services.updateById(productId, request));
+    }
+
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+    public @ResponseBody ResponseEntity<ProductOperation> deleteProduct(@PathVariable Id productId) {
+        return response(services.deleteById(productId));
+    }
 
 }

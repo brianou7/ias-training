@@ -1,12 +1,8 @@
 package co.edu.ff.orders.product.repositories;
 
 import co.edu.ff.orders.product.domain.ProductCreated;
-import co.edu.ff.orders.product.domain.ProductOperationFailure;
 import co.edu.ff.orders.product.domain.ProductOperationRequest;
-import co.edu.ff.orders.product.domain.ProductOperationSuccess;
-import co.edu.ff.orders.product.domain.contracts.ProductOperation;
 import co.edu.ff.orders.product.domain.fields.Id;
-import co.edu.ff.orders.product.exceptions.ProductDoesNotExists;
 import co.edu.ff.orders.product.repositories.contracts.ProductRepository;
 
 import java.util.*;
@@ -17,20 +13,16 @@ public class InMemoryProductRepository implements ProductRepository {
     private final Map<Id, ProductCreated> state = new HashMap<>();
 
     @Override
-    public ProductOperation insertOne(ProductOperationRequest request) {
+    public ProductCreated insertOne(ProductOperationRequest request) {
         Id id = Id.of(state.size() + 1L);
         ProductCreated productCreated = ProductCreated.from(request, id);
         state.put(id, productCreated);
-        return ProductOperationSuccess.of(productCreated);
+        return productCreated;
     }
 
     @Override
-    public ProductOperation findById(Id productId) {
-        if (state.containsKey(productId)) {
-            return ProductOperationSuccess.of(state.get(productId));
-        }
-
-        return ProductOperationFailure.of(ProductDoesNotExists.of(productId));
+    public Optional<ProductCreated> findById(Id productId) {
+        return Optional.ofNullable(state.get(productId));
     }
 
     @Override
@@ -39,25 +31,25 @@ public class InMemoryProductRepository implements ProductRepository {
     }
 
     @Override
-    public ProductOperation updateOne(Id productId, ProductOperationRequest request) {
-        ProductOperation productOperation = findById(productId);
-
-        if (productOperation instanceof ProductOperationSuccess) {
-            ProductCreated productUpdated = ProductCreated.from(request, productId);
-            state.replace(productId, productOperation.value(), productUpdated);
+    public Optional<ProductCreated> updateOne(Id productId, ProductOperationRequest request) {
+        if (state.containsKey(productId)) {
+            Id id = Id.of(state.size() + 1L);
+            ProductCreated productUpdated = ProductCreated.from(request, id);
+            state.replace(productId, productUpdated);
+            return Optional.of(productUpdated);
         }
 
-        return productOperation;
+        return Optional.empty();
     }
 
     @Override
-    public ProductOperation deleteOne(Id productId) {
-        ProductOperation productOperation = findById(productId);
-
-        if (productOperation instanceof ProductOperationSuccess) {
+    public Optional<ProductCreated> deleteOne(Id productId) {
+        if (state.containsKey(productId)) {
+            ProductCreated productRemoved = state.get(productId);
             state.remove(productId);
+            return Optional.of(productRemoved);
         }
 
-        return productOperation;
+        return Optional.empty();
     }
 }

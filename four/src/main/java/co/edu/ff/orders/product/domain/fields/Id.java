@@ -15,4 +15,9 @@ public class Id extends AbstractLongField {
         this.value = value;
     }
 
+    @Override
+    public Long valueOf() {
+        return value;
+    }
+
 }

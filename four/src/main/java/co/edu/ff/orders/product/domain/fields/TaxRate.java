@@ -22,4 +22,9 @@ public class TaxRate extends AbstractBigDecimalField {
         this.value = value;
     }
 
+    @Override
+    public BigDecimal valueOf() {
+        return value;
+    }
+
 }

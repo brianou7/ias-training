@@ -15,4 +15,8 @@ public class Stock extends AbstractIntegerField {
         this.value = value;
     }
 
+    @Override
+    public Integer valueOf() {
+        return value;
+    }
 }

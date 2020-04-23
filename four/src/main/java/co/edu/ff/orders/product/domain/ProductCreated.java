@@ -2,6 +2,7 @@ package co.edu.ff.orders.product.domain;
 
 import co.edu.ff.orders.product.domain.contracts.ProductOperation;
 import co.edu.ff.orders.product.domain.fields.*;
+import lombok.Builder;
 import lombok.Value;
 
 @Value(staticConstructor = "from")
